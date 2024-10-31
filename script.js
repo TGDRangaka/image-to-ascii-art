@@ -3,6 +3,8 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+let colorOn = false;
+
 // const image = new Image();
 // image.src = "image.jpg";
 // image.src = 'img.png';
@@ -58,8 +60,7 @@ class AsciiEffect {
         const { symbol, color } = this.asciiImg[i][j];
 
         ctx.fillText(symbol, j * this.cellGap, i * this.cellGap);
-        ctx.fillStyle = "white";
-        // ctx.fillStyle = color;
+        ctx.fillStyle = colorOn ? color : "white";
         ctx.font = `${this.cellGap}px Arial`;
       }
     }
@@ -89,11 +90,11 @@ class Cell {
       case avgClr >= 160:
         return "*";
       case avgClr >= 140:
-        return "x";
+        return "e";
       case avgClr >= 120:
         return "o";
       case avgClr >= 100:
-        return "n";
+        return "v";
       case avgClr >= 80:
         return "!";
       case avgClr >= 60:
@@ -138,6 +139,7 @@ const generateImage = () => {
   if (!file) {
     return;
   }
+  $('#convertButton').prop("disabled", true)
 
   const reader = new FileReader();
   reader.onload = function (event) {
@@ -147,6 +149,8 @@ const generateImage = () => {
       canvas.height = image.height;
       canvas.width = image.width;
       new AsciiEffect(ctx, image.width, image.height, image, scaleValue);
+
+      $('#convertButton').prop("disabled", false)
     };
     image.src = event.target.result;
   };
@@ -174,3 +178,19 @@ const downloadCanvas = () => {
 document
   .getElementById("downloadButton")
   .addEventListener("click", downloadCanvas);
+
+
+  $("#colorBtn").on('click', function () {
+    if(colorOn){
+      colorOn = false;
+      $("#colorBtn").removeClass('colorBtn');
+      $("#colorBtn").addClass('non-colorBtn');
+      $("#colorBtn").text('Color OFF');
+    }else{
+      colorOn = true;
+      $("#colorBtn").removeClass('non-colorBtn');
+      $("#colorBtn").addClass('colorBtn');
+      $("#colorBtn").text('Color ON');
+    }
+    generateImage();
+  })

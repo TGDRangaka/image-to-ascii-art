@@ -16,12 +16,19 @@
         <label for="imageInput">Image:</label>
         <input type="file" id="imageInput" accept="image/*" required />
       </div>
+
       <!-- slider input -->
       <div class="slider">
         <label for="scaleSlider">Per Pixels:</label>
         <input type="range" id="scaleSlider" min="1" max="20" value="5" />
         <span id="scaleOutput">5</span>
       </div>
+
+      <!-- color toggle button -->
+      <button type="button" id="colorBtn" class="non-colorBtn">
+        Color OFF
+      </button>
+
       <!-- submit -->
       <button id="convertButton" type="button">Convert to ASCII</button>
 

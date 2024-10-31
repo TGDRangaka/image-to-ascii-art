@@ -10,7 +10,7 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  background-color: #0e0e0e;
+  background-color: #000000;
   padding: 10px;
   color: white;
 }
@@ -34,7 +34,7 @@ canvas {
   width: auto;
   border: 1px solid #ccc;
   margin-top: 20px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(117, 117, 117, 0.034);
 }
 
 /* Form styling */
@@ -69,8 +69,21 @@ button {
   transition: background-color 0.3s;
 }
 
+#convertButton:disabled {
+  /* background-color: #8b8b8b; */
+  animation: pulse 1s ease-in-out infinite;
+}
+
 button:hover {
-  background-color: #555;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* Label styling */
@@ -144,4 +157,16 @@ label {
   #imageForm {
     max-width: 800px;
   }
+}
+
+.colorBtn {
+  background-color: rgb(150, 127, 255);
+  color: black;
+  font-weight: 800;
+}
+
+.non-colorBtn{
+  background-color: white;
+  color: black;
+  font-weight: 800;
 }
