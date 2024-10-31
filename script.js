@@ -38,7 +38,7 @@ class AsciiEffect {
       for (; j < width; j += cellGap) {
         pixelIndex = pixelsCountInRow + j * 4;
         const data = {
-          r: pixels[pixelIndex],     //red
+          r: pixels[pixelIndex], //red
           g: pixels[pixelIndex + 1], //green
           b: pixels[pixelIndex + 2], //blue
           a: pixels[pixelIndex + 3], //alpha
@@ -128,8 +128,8 @@ scaleSlider.on("input", function () {
 });
 
 imageInput.on("input", function () {
-    generateImage();
-})
+  generateImage();
+});
 
 const generateImage = () => {
   const scaleValue = parseInt(scaleSlider.val());
@@ -143,11 +143,34 @@ const generateImage = () => {
   reader.onload = function (event) {
     const image = new Image();
     image.onload = function () {
-      canvas.width = image.width;
+      // const aspectRation = image.width / image.height;
       canvas.height = image.height;
+      canvas.width = image.width;
       new AsciiEffect(ctx, image.width, image.height, image, scaleValue);
     };
     image.src = event.target.result;
   };
   reader.readAsDataURL(file);
 };
+
+const verticalSlider = document.getElementById("sliderVertical");
+const verticalSliderOut = document.getElementById("sliderVerticalOutput");
+
+verticalSlider.addEventListener("input", (event) => {
+  const scaleValue = event.target.value;
+  verticalSliderOut.textContent = `${scaleValue}%`;
+
+  // change canvas scale
+  canvas.style.transform = `scale(${scaleValue / 100})`;
+});
+
+const downloadCanvas = () => {
+  const link = document.createElement("a");
+  link.download = "canvas-image.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+};
+
+document
+  .getElementById("downloadButton")
+  .addEventListener("click", downloadCanvas);
