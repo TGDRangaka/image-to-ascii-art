@@ -1,59 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Image to ASCII</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image to ASCII</title>
 
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- <header>Image to ASCII</header> -->
-
-    <form id="imageForm">
-      <!-- image input -->
-      <div class="image">
-        <label for="imageInput">Image:</label>
-        <input type="file" id="imageInput" accept="image/*" required />
-      </div>
-
-      <!-- slider input -->
-      <div class="slider">
-        <label for="scaleSlider">Scale:</label>
-        <input type="range" id="scaleSlider" min="1" max="20" value="20" />
-        <span id="scaleOutput">20px</span>
-      </div>
-
-      <!-- color toggle button -->
-      <button type="button" id="colorBtn" class="non-colorBtn">
-        Color OFF
-      </button>
-
-      <!-- submit -->
-      <button id="convertButton" type="button">Convert</button>
-
-      <!-- Download Button -->
-      <button id="downloadButton" type="button">Download Image</button>
-    </form>
-
-    <main>
-      <span id="img-size">1000 x 1000</span>
-      <canvas id="canvas"></canvas>
-    </main>
-
-    <!-- slider vertical -->
-    <!-- need to be right - fixed -->
-    <div class="sliderVertical">
-      <!-- <label for="sliderVertical">Scale:</label> -->
-      <input type="range" id="sliderVertical" min="1" max="100" value="100" />
-      <span id="sliderVerticalOutput">100%</span>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <form id="imageForm">
+    <div class="image">
+      <label for="imageInput">Image:</label>
+      <input type="file" id="imageInput" accept="image/*" required />
     </div>
 
-    <!-- loading -->
-    <div class="loading"></div>
+    <div class="slider">
+      <label for="scaleSlider">Font Size:</label>
+      <input type="range" id="scaleSlider" min="1" max="20" value="20" />
+      <span id="scaleOutput">20px</span>
+    </div>
+  <div class="sliderVertical">
+    <label for="scaleSlider">Size:</label>
+    <input type="range" id="sliderVertical" min="1" max="200" value="100" />
+    <span id="sliderVerticalOutput">100%</span>
+  </div>
 
-    <!-- jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+    <button type="button" id="colorBtn" class="non-colorBtn">Color OFF</button>
+    <button id="convertButton" type="button">Convert</button>
+    <button id="downloadButton" type="button">Download Image</button>
+  </form>
+
+  <main>
+    <span id="img-size">1000 x 1000</span>
+    <canvas id="canvas"></canvas>
+  </main>
+
+
+  <div class="loading"></div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="script.js"></script>
+</body>
 </html>
