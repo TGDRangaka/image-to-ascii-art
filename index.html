@@ -19,9 +19,9 @@
 
       <!-- slider input -->
       <div class="slider">
-        <label for="scaleSlider">Per Pixels:</label>
-        <input type="range" id="scaleSlider" min="1" max="20" value="5" />
-        <span id="scaleOutput">5</span>
+        <label for="scaleSlider">Scale:</label>
+        <input type="range" id="scaleSlider" min="1" max="20" value="20" />
+        <span id="scaleOutput">20px</span>
       </div>
 
       <!-- color toggle button -->
@@ -30,12 +30,16 @@
       </button>
 
       <!-- submit -->
-      <button id="convertButton" type="button">Convert to ASCII</button>
+      <button id="convertButton" type="button">Convert</button>
 
       <!-- Download Button -->
-      <button id="downloadButton" type="button">Download Canvas</button>
+      <button id="downloadButton" type="button">Download Image</button>
     </form>
-    <canvas id="canvas"></canvas>
+
+    <main>
+      <span id="img-size">1000 x 1000</span>
+      <canvas id="canvas"></canvas>
+    </main>
 
     <!-- slider vertical -->
     <!-- need to be right - fixed -->
@@ -44,6 +48,9 @@
       <input type="range" id="sliderVertical" min="1" max="100" value="100" />
       <span id="sliderVerticalOutput">100%</span>
     </div>
+
+    <!-- loading -->
+    <div class="loading"></div>
 
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

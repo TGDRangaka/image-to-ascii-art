@@ -4,6 +4,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let colorOn = false;
+let effect;
 
 // const image = new Image();
 // image.src = "image.jpg";
@@ -31,25 +32,38 @@ class AsciiEffect {
 
   getAsciiCells() {
     ctx.clearRect(0, 0, this.width, this.height);
+    ctx.fillStyle = "rgba(0, 0, 0, 1)";
+    ctx.fillRect(0, 0, this.width, this.height);
+
     const { width, height, cellGap, pixels } = this;
 
     for (let i = 0, y = 0; i < height; i += cellGap, y++) {
       const row = [];
-
       const pixelsCountInRow = width * 4 * i;
+      let prevPixel = 0;
+      let currentPixel = 0;
+
       for (let j = 0, x = 0; j < width; j += cellGap, x++) {
-        const pixelIndex = pixelsCountInRow + j * 4;
-        const data = {
-          r: pixels[pixelIndex], //red
-          g: pixels[pixelIndex + 1], //green
-          b: pixels[pixelIndex + 2], //blue
-          a: pixels[pixelIndex + 3], //alpha
-        };
+        prevPixel = currentPixel;
+        currentPixel = pixelsCountInRow + j * 4;
+        let data;
+
+        if (cellGap > 20) {
+          // in cell gap, get avg colors
+          data = this.getAvgColorData(prevPixel, currentPixel);
+        } else {
+          data = {
+            r: pixels[currentPixel], //red
+            g: pixels[currentPixel + 1], //green
+            b: pixels[currentPixel + 2], //blue
+            a: pixels[currentPixel + 3], //alpha
+          };
+        }
 
         // create cell
         const cell = new Cell(x, y, data);
         this.drawCell(cell);
-        // row.push(new Cell(j, i, data));
+        row.push(cell);
       }
       this.asciiImg.push(row);
     }
@@ -59,47 +73,42 @@ class AsciiEffect {
     const { ctx, cellGap } = this;
     const { symbol, color, x, y } = cell;
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; // Set color based on toggle
-    ctx.fillRect(
-      x * cellGap,
-      y * cellGap,
-      cellGap,
-      cellGap
-    );
+    if(colorOn){
+      ctx.fillStyle = 'rgba(255,255,255,0.05)'; // Set cell color
+      ctx.fillRect(x * cellGap, y * cellGap, cellGap, cellGap);
+    }
 
     // Draw the symbol on top of the rectangle
     ctx.fillStyle = colorOn ? color : "white"; // Set symbol color (e.g., black for contrast)
     ctx.font = `${cellGap}px Arial`;
-    ctx.fillText(
-      symbol,
-      x * cellGap,
-      y * cellGap + cellGap * 0.8
-    );
+    ctx.fillText(symbol, x * cellGap, y * cellGap + cellGap * 0.8);
+  }
+
+  getAvgColorData(prev, current) {
+    let data = { r: 0, g: 0, b: 0, a: 0 };
+    for (let i = prev; i < current; i += 4) {
+      // console.log(this.pixels[i], this.pixels[i+1], this.pixels[i+2], this.pixels[i+3])
+      data.r += this.pixels[i];
+      data.g += this.pixels[i + 1];
+      data.b += this.pixels[i + 2];
+      data.a += this.pixels[i + 3];
+    }
+    const d = (current - prev) / 4;
+    data.r = Math.floor(data.r / d);
+    data.g = Math.floor(data.g / d);
+    data.b = Math.floor(data.b / d);
+    data.a = Math.floor(data.a / d);
+    return data;
   }
 
   drawAsciiImage() {
     ctx.clearRect(0, 0, this.width, this.height);
+    ctx.fillStyle = "rgba(0, 0, 0, 1)";
+    ctx.fillRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < this.asciiImg.length; i++) {
       for (let j = 0; j < this.asciiImg[i].length; j++) {
-        const { symbol, color } = this.asciiImg[i][j];
-        // Draw the rectangle below the symbol
-        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; // Set color based on toggle
-        ctx.fillRect(
-          j * this.cellGap,
-          i * this.cellGap,
-          this.cellGap,
-          this.cellGap
-        );
-
-        // Draw the symbol on top of the rectangle
-        ctx.fillStyle = colorOn ? color : "white"; // Set symbol color (e.g., black for contrast)
-        ctx.font = `${this.cellGap}px Arial`;
-        ctx.fillText(
-          symbol,
-          j * this.cellGap,
-          i * this.cellGap + this.cellGap * 0.8
-        );
+        this.drawCell(this.asciiImg[i][j]);
       }
     }
   }
@@ -119,30 +128,79 @@ class Cell {
     if (a < 80) return " ";
 
     switch (true) {
-      case avgClr >= 240:
+      // case avgClr >= 240:
+      //   return "#";
+      // case avgClr >= 200:
+      //   return "%";
+      // case avgClr >= 180:
+      //   return "w";
+      // case avgClr >= 160:
+      //   return "o";
+      // case avgClr >= 140:
+      //   return "o";
+      // case avgClr >= 120:
+      //   return "v";
+      // case avgClr >= 100:
+      //   return "*";
+      // case avgClr >= 80:
+      //   return "!";
+      // case avgClr >= 60:
+      //   return ";";
+      // case avgClr >= 40:
+      //   return "~";
+      // case avgClr >= 20:
+      //   return ",";
+      // default:
+      //   return ".";
+
+      case avgClr >= 245:
+        return "@";
+      case avgClr >= 235:
+        return "Q";
+      case avgClr >= 225:
+        return "0";
+      case avgClr >= 215:
+        return "W";
+      case avgClr >= 205:
+        return "$";
+      case avgClr >= 195:
+        return "M";
+      case avgClr >= 185:
+        return "B";
+      case avgClr >= 175:
+        return "8";
+      case avgClr >= 165:
+        return "&";
+      case avgClr >= 155:
         return "#";
-      case avgClr >= 200:
+      case avgClr >= 145:
         return "%";
-      case avgClr >= 180:
-        return "w";
-      case avgClr >= 160:
+      case avgClr >= 135:
+        return "x";
+      case avgClr >= 125:
         return "*";
-      case avgClr >= 140:
-        return "e";
-      case avgClr >= 120:
-        return "o";
-      case avgClr >= 100:
-        return "v";
-      case avgClr >= 80:
+      case avgClr >= 115:
+        return "=";
+      case avgClr >= 105:
+        return "+";
+      case avgClr >= 95:
+        return "i";
+      case avgClr >= 85:
         return "!";
-      case avgClr >= 60:
+      case avgClr >= 75:
         return ";";
-      case avgClr >= 40:
-        return "~";
-      case avgClr >= 20:
+      case avgClr >= 65:
+        return ":";
+      case avgClr >= 55:
+        return "^";
+      case avgClr >= 45:
         return ",";
-      default:
+      case avgClr >= 35:
         return ".";
+      case avgClr >= 25:
+        return " ";
+      default:
+        return " ";
     }
   }
 }
@@ -157,19 +215,36 @@ const scaleSlider = $("#scaleSlider");
 const scaleOutput = $("#scaleOutput");
 const imageInput = $("#imageInput");
 
+// convert button action
 $("#convertButton").click(function () {
   generateImage();
 });
 
+// gap slider action
 scaleSlider.on("input", function () {
-  scaleOutput.text(scaleSlider.val());
+  scaleOutput.text(scaleSlider.val() + "px");
   generateImage();
 });
 
+// image input action
 imageInput.on("input", function () {
-  generateImage();
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    const image = new Image();
+    image.onload = function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.height = image.height;
+      canvas.width = image.width;
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
+    image.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
 });
 
+// generate image
 const generateImage = () => {
   const scaleValue = parseInt(scaleSlider.val());
   const file = imageInput[0].files[0];
@@ -177,18 +252,25 @@ const generateImage = () => {
   if (!file) {
     return;
   }
-  $("#convertButton").prop("disabled", true);
+  start();
 
   const reader = new FileReader();
   reader.onload = function (event) {
     const image = new Image();
     image.onload = function () {
-      // const aspectRation = image.width / image.height;
-      canvas.height = image.height;
+      const aspectRatio = image.width / image.height;
+      $("#img-size").text(`${image.width}x${image.height}`);
       canvas.width = image.width;
-      new AsciiEffect(ctx, image.width, image.height, image, scaleValue);
+      canvas.height = image.height;
+      effect = new AsciiEffect(
+        ctx,
+        image.width,
+        image.height,
+        image,
+        scaleValue
+      );
 
-      $("#convertButton").prop("disabled", false);
+      end();
     };
     image.src = event.target.result;
   };
@@ -198,6 +280,7 @@ const generateImage = () => {
 const verticalSlider = document.getElementById("sliderVertical");
 const verticalSliderOut = document.getElementById("sliderVerticalOutput");
 
+// verticalSlider action
 verticalSlider.addEventListener("input", (event) => {
   const scaleValue = event.target.value;
   verticalSliderOut.textContent = `${scaleValue}%`;
@@ -217,17 +300,33 @@ document
   .getElementById("downloadButton")
   .addEventListener("click", downloadCanvas);
 
-$("#colorBtn").on("click", function () {
+$("#colorBtn").on("click", async function () {
+  start();
   if (colorOn) {
     colorOn = false;
-    $("#colorBtn").removeClass("colorBtn");
-    $("#colorBtn").addClass("non-colorBtn");
-    $("#colorBtn").text("Color OFF");
+    await $("#colorBtn").removeClass("colorBtn");
+    await $("#colorBtn").addClass("non-colorBtn");
+    await $("#colorBtn").text("Color OFF");
   } else {
     colorOn = true;
-    $("#colorBtn").removeClass("non-colorBtn");
-    $("#colorBtn").addClass("colorBtn");
-    $("#colorBtn").text("Color ON");
+    await $("#colorBtn").removeClass("non-colorBtn");
+    await $("#colorBtn").addClass("colorBtn");
+    await $("#colorBtn").text("Color ON");
   }
-  generateImage();
+  if (effect) {
+    await effect.drawAsciiImage();
+  } else {
+    generateImage();
+  }
+  end();
 });
+
+const start = () => {
+  $("#convertButton").prop("disabled", true);
+  $(".loading").show();
+}
+
+const end = () => {
+  $("#convertButton").prop("disabled", false);
+  $(".loading").hide();
+}
