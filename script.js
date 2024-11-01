@@ -26,19 +26,19 @@ class AsciiEffect {
     this.getAsciiCells();
 
     // draw ascii image
-    this.drawAsciiImage();
+    // this.drawAsciiImage();
   }
 
   getAsciiCells() {
+    ctx.clearRect(0, 0, this.width, this.height);
     const { width, height, cellGap, pixels } = this;
-    let pixelIndex = 0;
 
-    for (let i = 0; i < height; i += cellGap) {
+    for (let i = 0, y = 0; i < height; i += cellGap, y++) {
       const row = [];
-      let j = 0;
+
       const pixelsCountInRow = width * 4 * i;
-      for (; j < width; j += cellGap) {
-        pixelIndex = pixelsCountInRow + j * 4;
+      for (let j = 0, x = 0; j < width; j += cellGap, x++) {
+        const pixelIndex = pixelsCountInRow + j * 4;
         const data = {
           r: pixels[pixelIndex], //red
           g: pixels[pixelIndex + 1], //green
@@ -46,10 +46,35 @@ class AsciiEffect {
           a: pixels[pixelIndex + 3], //alpha
         };
 
-        row.push(new Cell(j, i, data));
+        // create cell
+        const cell = new Cell(x, y, data);
+        this.drawCell(cell);
+        // row.push(new Cell(j, i, data));
       }
       this.asciiImg.push(row);
     }
+  }
+
+  drawCell(cell) {
+    const { ctx, cellGap } = this;
+    const { symbol, color, x, y } = cell;
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; // Set color based on toggle
+    ctx.fillRect(
+      x * cellGap,
+      y * cellGap,
+      cellGap,
+      cellGap
+    );
+
+    // Draw the symbol on top of the rectangle
+    ctx.fillStyle = colorOn ? color : "white"; // Set symbol color (e.g., black for contrast)
+    ctx.font = `${cellGap}px Arial`;
+    ctx.fillText(
+      symbol,
+      x * cellGap,
+      y * cellGap + cellGap * 0.8
+    );
   }
 
   drawAsciiImage() {
@@ -58,10 +83,23 @@ class AsciiEffect {
     for (let i = 0; i < this.asciiImg.length; i++) {
       for (let j = 0; j < this.asciiImg[i].length; j++) {
         const { symbol, color } = this.asciiImg[i][j];
+        // Draw the rectangle below the symbol
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; // Set color based on toggle
+        ctx.fillRect(
+          j * this.cellGap,
+          i * this.cellGap,
+          this.cellGap,
+          this.cellGap
+        );
 
-        ctx.fillText(symbol, j * this.cellGap, i * this.cellGap);
-        ctx.fillStyle = colorOn ? color : "white";
+        // Draw the symbol on top of the rectangle
+        ctx.fillStyle = colorOn ? color : "white"; // Set symbol color (e.g., black for contrast)
         ctx.font = `${this.cellGap}px Arial`;
+        ctx.fillText(
+          symbol,
+          j * this.cellGap,
+          i * this.cellGap + this.cellGap * 0.8
+        );
       }
     }
   }
@@ -71,7 +109,7 @@ class Cell {
   constructor(x, y, color) {
     this.x = x;
     this.y = y;
-    this.color = `rgb(${color.r}, ${color.g}, ${color.b}, ${1})`;
+    this.color = `rgb(${color.r}, ${color.g}, ${color.b}, ${color.a / 255})`;
     this.symbol = this.colorToSymbol(color);
   }
 
@@ -139,7 +177,7 @@ const generateImage = () => {
   if (!file) {
     return;
   }
-  $('#convertButton').prop("disabled", true)
+  $("#convertButton").prop("disabled", true);
 
   const reader = new FileReader();
   reader.onload = function (event) {
@@ -150,7 +188,7 @@ const generateImage = () => {
       canvas.width = image.width;
       new AsciiEffect(ctx, image.width, image.height, image, scaleValue);
 
-      $('#convertButton').prop("disabled", false)
+      $("#convertButton").prop("disabled", false);
     };
     image.src = event.target.result;
   };
@@ -179,18 +217,17 @@ document
   .getElementById("downloadButton")
   .addEventListener("click", downloadCanvas);
 
-
-  $("#colorBtn").on('click', function () {
-    if(colorOn){
-      colorOn = false;
-      $("#colorBtn").removeClass('colorBtn');
-      $("#colorBtn").addClass('non-colorBtn');
-      $("#colorBtn").text('Color OFF');
-    }else{
-      colorOn = true;
-      $("#colorBtn").removeClass('non-colorBtn');
-      $("#colorBtn").addClass('colorBtn');
-      $("#colorBtn").text('Color ON');
-    }
-    generateImage();
-  })
+$("#colorBtn").on("click", function () {
+  if (colorOn) {
+    colorOn = false;
+    $("#colorBtn").removeClass("colorBtn");
+    $("#colorBtn").addClass("non-colorBtn");
+    $("#colorBtn").text("Color OFF");
+  } else {
+    colorOn = true;
+    $("#colorBtn").removeClass("non-colorBtn");
+    $("#colorBtn").addClass("colorBtn");
+    $("#colorBtn").text("Color ON");
+  }
+  generateImage();
+});
